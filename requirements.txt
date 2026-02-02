@@ -1,0 +1,14 @@
+pandas
+numpy
+requests
+scikit-learn
+pymongo
+mlflow
+shap
+fastapi
+uvicorn
+streamlit
+matplotlib
+seaborn
+
+-e .

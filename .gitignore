@@ -1,0 +1,49 @@
+# ===== Python =====
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+dist/
+build/
+
+# ===== Virtual Environments =====
+env/
+venv/
+.venv/
+aqi-env/
+C:\Users\PMLS\.conda\envs\aqi-env
+
+# ===== Jupyter =====
+.ipynb_checkpoints/
+*.ipynb
+
+# ===== Environment & Secrets =====
+.env
+*.env
+.env.*
+
+# ===== Logs & Temp Files =====
+*.log
+*.tmp
+*.bak
+
+# ===== VS Code =====
+.vscode/
+
+# ===== Data & Models =====
+data/
+datasets/
+models/
+artifacts/
+mlruns/
+
+# ===== OS Files =====
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ===== Reports & Outputs =====
+reports/
+outputs/
