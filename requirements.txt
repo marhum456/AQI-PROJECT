@@ -10,5 +10,9 @@ uvicorn
 streamlit
 matplotlib
 seaborn
-
+python-dotenv
+xgboost
+lightgbm
+joblib
+certifi
 -e .
