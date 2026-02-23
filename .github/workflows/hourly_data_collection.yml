@@ -26,7 +26,6 @@ jobs:
     
     - name: Run data collection
       env:
-        MONGODB_URI: ${{ secrets.MONGODB_URI }}
-        MONGODB_DATABASE: ${{ secrets.MONGODB_DATABASE }}
+            MONGO_URI: ${{ secrets.MONGO_URI }}
       run: |
         python src/pipelines/new_data_with_features.py
