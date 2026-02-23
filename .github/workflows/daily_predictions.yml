@@ -27,7 +27,6 @@ jobs:
     
     - name: Generate 3-day predictions
       env:
-        MONGODB_URI: ${{ secrets.MONGODB_URI }}
-        MONGODB_DATABASE: ${{ secrets.MONGODB_DATABASE }}
+        MONGO_URI: ${{ secrets.MONGO_URI }}
       run: |
-        python src/pipeline/predict_next_3_days.py
+        python src/pipelines/predict_next_3_days.py
