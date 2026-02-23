@@ -27,8 +27,7 @@ jobs:
     
     - name: Train and register model
       env:
-        MONGODB_URI: ${{ secrets.MONGODB_URI }}
-        MONGODB_DATABASE: ${{ secrets.MONGODB_DATABASE }}
+            MONGO_URI: ${{ secrets.MONGO_URI }}
       run: |
         python src/pipeline/train_register_model.py
     
