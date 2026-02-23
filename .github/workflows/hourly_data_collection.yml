@@ -29,4 +29,4 @@ jobs:
         MONGODB_URI: ${{ secrets.MONGODB_URI }}
         MONGODB_DATABASE: ${{ secrets.MONGODB_DATABASE }}
       run: |
-        python src/pipeline/new_data_with_features.py
+        python src/pipelines/new_data_with_features.py
