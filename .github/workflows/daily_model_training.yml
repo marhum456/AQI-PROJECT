@@ -29,7 +29,7 @@ jobs:
       env:
             MONGO_URI: ${{ secrets.MONGO_URI }}
       run: |
-        python src/pipeline/train_register_model.py
+        python src/pipelines/train_register_model.py
     
     - name: Upload model artifact
       uses: actions/upload-artifact@v4
