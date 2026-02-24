@@ -29,4 +29,4 @@ jobs:
         env:
           MONGO_URI: ${{ secrets.MONGO_URI }}
         run: |
-          python src/pipeline/predict_next_3_days.py
+          python src/pipelines/predict_next_3_days.py
