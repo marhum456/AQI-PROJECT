@@ -24,11 +24,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Download trained model artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: trained-model
-          path: models
 
       - name: Generate 3-day predictions
         env:
