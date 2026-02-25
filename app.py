@@ -16,8 +16,7 @@ from dotenv import load_dotenv
 import os
 
 # Load environment variables
-load_dotenv()
-MONGO_URI = os.getenv("MONGO_URI")
+MONGO_URI = st.secrets["MONGO_URI"]
 
 # Page config
 st.set_page_config(
@@ -44,12 +43,14 @@ def get_aqi_category(aqi):
         return "Hazardous", "#7E0023"
 
 
+from pathlib import Path
+
 def refresh_predictions():
-    """Run prediction pipeline to generate fresh predictions."""
     try:
         with st.spinner("Generating fresh predictions... This may take a minute."):
+            script_path = Path(__file__).parent / "src" / "pipeline" / "predict_next_3_days.py"
             result = subprocess.run(
-                ["python", "src/pipeline/predict_next_3_days.py"],
+                ["python", str(script_path)],
                 capture_output=True,
                 text=True,
                 timeout=120
@@ -66,11 +67,11 @@ def refresh_predictions():
 
 
 def collect_fresh_data():
-    """Run data collection pipeline to fetch latest AQI data."""
     try:
         with st.spinner("Collecting fresh AQI data from API... This may take a moment."):
+            script_path = Path(__file__).parent / "src" / "pipeline" / "new_data_with_features.py"
             result = subprocess.run(
-                ["python", "src/pipeline/new_data_with_features.py"],
+                ["python", str(script_path)],
                 capture_output=True,
                 text=True,
                 timeout=60
@@ -84,10 +85,6 @@ def collect_fresh_data():
         st.error("❌ Data collection timed out. Please try again.")
     except Exception as e:
         st.error(f"❌ Error: {str(e)}")
-
-
-
-
 
 def load_model_registry():
     """Load model comparison from MongoDB (using .env URI)."""
@@ -160,6 +157,7 @@ def load_latest_aqi():
         client.close()
 
 # Main Dashboard
+
 st.title("🌍 AQI Predictor Dashboard")
 st.markdown("Real-time Air Quality Index prediction for Gujrat")
 
