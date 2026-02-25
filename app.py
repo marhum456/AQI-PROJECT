@@ -48,7 +48,7 @@ from pathlib import Path
 def refresh_predictions():
     try:
         with st.spinner("Generating fresh predictions... This may take a minute."):
-            script_path = Path(__file__).parent / "src" / "pipeline" / "predict_next_3_days.py"
+            script_path = Path(__file__).parent / "src" / "pipelines" / "predict_next_3_days.py"
             result = subprocess.run(
                 ["python", str(script_path)],
                 capture_output=True,
@@ -69,7 +69,7 @@ def refresh_predictions():
 def collect_fresh_data():
     try:
         with st.spinner("Collecting fresh AQI data from API... This may take a moment."):
-            script_path = Path(__file__).parent / "src" / "pipeline" / "new_data_with_features.py"
+            script_path = Path(__file__).parent / "src" / "pipelines" / "new_data_with_features.py"
             result = subprocess.run(
                 ["python", str(script_path)],
                 capture_output=True,
