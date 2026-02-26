@@ -68,6 +68,29 @@ Cleaned datasets are saved back into MongoDB for modeling.
 
 ---
 
+## Feature Importance
+Top features identified using SHAP values to explain model predictions:
+
+| Rank | Feature | Mean Absolute SHAP |
+|------|---------|------------------|
+| 1 | aqi_lag_1 | 10.24 |
+| 2 | aqi_roll_mean_6 | 5.63 |
+| 3 | ozone | 5.11 |
+| 4 | aqi_lag_24 | 4.93 |
+| 5 | pm2_5 | 4.38 |
+| 6 | aqi_change_1h | 4.04 |
+| 7 | pm10 | 4.01 |
+| 8 | sulphur_dioxide | 2.45 |
+| 9 | aqi_roll_mean_24 | 2.28 |
+| 10 | nitrogen_dioxide | 2.00 |
+
+**Key Insights:**
+- Recent AQI (lagged) dominates predictions  
+- Primary pollutants (ozone, pm2.5, pm10, SO2, NO2) are critical  
+- Momentum and rolling features enhance short-term prediction accuracy
+
+---
+
 ## Pipelines
 **Hourly Pipeline**
 - Collects, processes, and stores AQI/weather data hourly  
