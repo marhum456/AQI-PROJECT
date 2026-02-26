@@ -1,6 +1,5 @@
 # Automated AQI Prediction System Gujrat, Pakistan – 72-Hour Forecast 
 
-**72-Hour Forecast & Environmental Intelligence**  
 
 **Author:** Muhammad Arhum  
 **Program:** 10P Shine Internship Program  
