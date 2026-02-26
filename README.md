@@ -71,14 +71,26 @@ Raw AQI and weather data is collected hourly via OpenMeteo and stored in MongoDB
 
 ## AQI Calculation
 **Single pollutant AQI:**  
-\[
-AQI_{pollutant} = \frac{I_{high} - I_{low}}{C_{high} - C_{low}} \cdot (C_{measured} - C_{low}) + I_{low}
-\]  
+The AQI for an individual pollutant is calculated using linear interpolation between breakpoint concentrations:
+
+Formula:
+
+AQI_pollutant = ((I_high − I_low) / (C_high − C_low)) × (C_measured − C_low) + I_low
+
+Where:
+
+C_measured = Measured concentration of the pollutant
+
+C_low, C_high = Breakpoint concentration range in which the measured value falls
+
+I_low, I_high = AQI index values corresponding to that breakpoint range
 
 **Overall AQI:**  
-\[
-AQI_{overall} = \max(AQI_{PM2.5}, AQI_{PM10}, AQI_{O3}, AQI_{NO2}, AQI_{SO2}, AQI_{CO})
-\]  
+The final AQI value is determined by taking the maximum AQI value among all considered pollutants:
+
+AQI_overall = max(AQI_PM2.5, AQI_PM10, AQI_O3, AQI_NO2, AQI_SO2, AQI_CO)
+
+This means the pollutant with the highest AQI value defines the overall air quality category.
 
 **AQI Categories:**
 
