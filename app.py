@@ -135,7 +135,7 @@ latest_data = load_latest_aqi()
 
 st.markdown("""
 <div style="text-align:center;">
-    <h1>🌍Air Quality Monitoring Portal</h1>
+    <h1>Automated AQI Prediction System Gujrat, Pakistan – 72-Hour Forecast </h1>
     <p class="subtitle">
     Environmental Intelligence System – Gujrat, Pakistan <br>
     72-Hour Forecast & Predictive Risk Assessment
@@ -239,50 +239,70 @@ if registry:
 
     models_data = registry['models']
 
+    # Create full comparison dataframe
     comparison_df = pd.DataFrame({
         'Model': ['Random Forest', 'XGBoost', 'LightGBM'],
         'R² Score': [
             models_data['random_forest']['r2'],
             models_data['xgboost']['r2'],
             models_data['lightgbm']['r2']
+        ],
+        'MAE': [
+            models_data['random_forest']['mae'],
+            models_data['xgboost']['mae'],
+            models_data['lightgbm']['mae']
+        ],
+        'RMSE': [
+            models_data['random_forest']['rmse'],
+            models_data['xgboost']['rmse'],
+            models_data['lightgbm']['rmse']
         ]
     })
 
+    # =========================
+    # 1️⃣ SHOW TABLE WITH VALUES
+    # =========================
+    st.dataframe(comparison_df, use_container_width=True)
+
+    # =========================
+    # 2️⃣ BAR CHART WITH VALUES DISPLAYED
+    # =========================
     fig = go.Figure()
 
     fig.add_trace(go.Bar(
         x=comparison_df['Model'],
         y=comparison_df['R² Score'],
+        text=[f"{val:.3f}" for val in comparison_df['R² Score']],
+        textposition='outside',
         marker_color="#60A5FA"
     ))
 
     fig.update_layout(
-        height=350,
+        height=400,
         paper_bgcolor="rgba(0,0,0,0)",
         font=dict(color="#F1F5F9"),
-        yaxis_title="R² Score"
+        yaxis_title="R² Score",
+        yaxis=dict(range=[0, 1])
     )
 
     st.plotly_chart(fig, use_container_width=True)
 
-    best_model = comparison_df.loc[
-        comparison_df['R² Score'].idxmax(), 'Model'
-    ]
+    # =========================
+    # 3️⃣ KPI STYLE DISPLAY FOR BEST MODEL
+    # =========================
+    best_index = comparison_df['R² Score'].idxmax()
+    best_model = comparison_df.loc[best_index, 'Model']
 
-    st.markdown(f"""
-    <div style='
-        background: rgba(255,255,255,0.05);
-        padding: 15px;
-        border-radius: 12px;
-        margin-top: 15px;
-        border: 1px solid rgba(255,255,255,0.1);
-    '>
-        <strong>Selected Production Model:</strong> {best_model}
-    </div>
-    """, unsafe_allow_html=True)
+    st.markdown("### 🏆 Selected Production Model")
+
+    col1, col2, col3 = st.columns(3)
+
+    col1.metric("Model", best_model)
+    col2.metric("R² Score", f"{comparison_df.loc[best_index, 'R² Score']:.4f}")
+    col3.metric("RMSE", f"{comparison_df.loc[best_index, 'RMSE']:.2f}")
 
     st.markdown('</div>', unsafe_allow_html=True)
-
+    
 # =========================
 # FOOTER
 # =========================
