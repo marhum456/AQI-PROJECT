@@ -1,11 +1,6 @@
 # Automated AQI Prediction System
 **Gujrat, Pakistan – 72-Hour Forecast & Environmental Intelligence**
 
-**Submitted by:**  
-Muhammad Arhum – Data Science Intern  
-Program: 10P Shine Internship Program  
-Duration: December 2025 – February 2026  
-
 ---
 
 ## Table of Contents
@@ -215,16 +210,25 @@ Cleaned datasets are saved back to MongoDB for modeling.
 ---
 
 ## How to Run the Project
-1. **Clone the repository:**  
-```bash
-git clone https://github.com/yourusername/aqi-prediction-system.git
-cd aqi-prediction-system```
 
-**Set Environment Variables**
 
-Create a `.env` file and add:
+1. **Clone the repository:**
+    ```bash
+    git clone https://github.com/marhum456/AQI-PROJECT.git
+    cd AQI-PROJECT
+    ```
 
-```env
-MONGO_URI=<your_mongodb_uri>
-CITY_LATITUDE=32.5731
-CITY_LONGITUDE=74.1005
+2. **Setup Virtual Environment & Install Dependencies:**
+    ```bash
+        python -m venv venv
+# Activate
+        source venv/bin/activate   # Linux/macOS
+        venv\Scripts\activate      # Windows
+        pip install -r requirements.txt
+    ```
+
+3. **Run the Jupyter Notebooks or Python scripts:**
+    Launch Jupyter Lab and open the notebooks in the `notebooks/` directory, or run the Python scripts directly.
+    ```bash
+    jupyter lab
+    ```
