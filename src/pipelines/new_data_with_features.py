@@ -7,13 +7,11 @@ from pymongo import MongoClient
 from dotenv import load_dotenv
 import pytz
 
-import streamlit as st
-from pymongo import MongoClient
-
 # =========================
-# MongoDB Setup (Streamlit Cloud)
+# MongoDB Setup
 # =========================
-MONGO_URI = st.secrets["MONGO_URI"]  # <- use Streamlit secrets
+load_dotenv()
+MONGO_URI = os.getenv("MONGO_URI")
 client = MongoClient(MONGO_URI)
 db = client["aqi_project"]
 engineered_collection = db["engineered_data_final"]
