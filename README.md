@@ -4,17 +4,17 @@
 ---
 
 ## Table of Contents
-1. [Introduction](#introduction)  
-2. [Data Collection](#data-collection)  
-3. [MongoDB as Feature Store](#mongodb-as-feature-store)  
-4. [AQI Calculation](#aqi-calculation)  
-5. [Feature Engineering](#feature-engineering)  
-6. [Model Training](#model-training)  
-7. [Feature Importance](#feature-importance)  
-8. [Pipelines](#pipelines)  
-9. [Web Application Dashboard](#web-application-dashboard)  
-10. [Key Challenges and Solutions](#key-challenges-and-solutions)  
-11. [Technology Stack](#technology-stack)  
+1. [Introduction](#introduction)
+2. [Technology Stack](#technology-stack) 
+3. [Data Collection](#data-collection)  
+4. [MongoDB as Feature Store](#mongodb-as-feature-store)  
+5. [AQI Calculation](#aqi-calculation)  
+6. [Feature Engineering](#feature-engineering)  
+7. [Model Training](#model-training)  
+8. [Feature Importance](#feature-importance)  
+9. [Pipelines](#pipelines)  
+10. [Web Application Dashboard](#web-application-dashboard)  
+11. [Key Challenges and Solutions](#key-challenges-and-solutions)   
 12. [How to Run](#how-to-run)  
 
 ---
@@ -38,6 +38,18 @@ Air pollution is a critical environmental issue in Pakistan. This project builds
 - Integration: MongoDB + Streamlit dashboard  
 
 ---
+
+## Technology Stack
+- **Python**: Core language  
+- **Pandas / NumPy**: Data processing  
+- **scikit-learn, XGBoost, LightGBM**: Machine learning  
+- **SHAP**: Feature importance  
+- **MongoDB**: Feature store & model registry  
+- **Streamlit / Plotly**: Dashboard & visualization  
+- **GitHub Actions / Airflow**: CI/CD automation
+
+---
+
 
 ## Data Collection
 | API         | Access                       | Historical Data | Selected |
@@ -183,31 +195,11 @@ Cleaned datasets are saved back to MongoDB for modeling.
 
 ---
 
-## Key Challenges and Solutions
-
-| Challenge                              | Solution                                                   |
-|----------------------------------------|------------------------------------------------------------|
-| DNS blocking of AQICN/OpenWeather      | Evaluated multiple APIs, selected OpenMeteo               |
-| Limited historical data (3 months)     | Continuous collection strategy, 90+ days backfill        |
-| Time-series validation                  | Temporal split, no shuffling                              |
-| Feature engineering complexity          | Automated sequential feature pipelines                   |
-| Model selection & tracking              | Trained multiple models, registered best in MongoDB       |
-| 72-hour forecast consistency            | Sequential update of lag & rolling features              |
-| Production reliability                  | Error handling, retries, logging, monitoring             |
-| Dashboard responsiveness & UX           | WHO Dark Mode + Glass UI, interactive charts             |
+## View Real-Time Deployed Dashboard on:
+https://aqi-project-gujrat.streamlit.app/
 
 ---
-
-## Technology Stack
-- **Python**: Core language  
-- **Pandas / NumPy**: Data processing  
-- **scikit-learn, XGBoost, LightGBM**: Machine learning  
-- **SHAP**: Feature importance  
-- **MongoDB**: Feature store & model registry  
-- **Streamlit / Plotly**: Dashboard & visualization  
-- **GitHub Actions / Airflow**: CI/CD automation  
-
----
+  
 
 ## How to Run the Project
 
@@ -221,14 +213,33 @@ Cleaned datasets are saved back to MongoDB for modeling.
 2. **Setup Virtual Environment & Install Dependencies:**
     ```bash
         python -m venv venv
-# Activate
+
         source venv/bin/activate   # Linux/macOS
         venv\Scripts\activate      # Windows
         pip install -r requirements.txt
     ```
 
-3. **Run the Jupyter Notebooks or Python scripts:**
-    Launch Jupyter Lab and open the notebooks in the `notebooks/` directory, or run the Python scripts directly.
+3. **Create .env in project root:**
+
     ```bash
-    jupyter lab
+    MONGO_URI=<your_mongodb_uri>
+    CITY_LATITUDE=32.5731
+    CITY_LONGITUDE=74.1005
     ```
+4. **Create .env in project root:**
+
+    ```bash
+    MONGO_URI=<your_mongodb_uri>
+    CITY_LATITUDE=32.5731
+    CITY_LONGITUDE=74.1005
+    ```
+5. **run streamlit dashboard:**
+    ```bash
+    streamlit run app.py
+    ```
+    Open browser at: http://localhost:8501
+
+---
+   
+
+
