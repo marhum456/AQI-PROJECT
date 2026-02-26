@@ -302,10 +302,16 @@ if registry:
     col3.metric("RMSE", f"{comparison_df.loc[best_index, 'RMSE']:.2f}")
 
     st.markdown('</div>', unsafe_allow_html=True)
-    
+
 # =========================
 # FOOTER
 # =========================
 
-st.markdown("---")
-st.caption(f"System Last Updated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+from datetime import datetime
+import pytz
+
+pakistan_tz = pytz.timezone("Asia/Karachi")
+local_time = datetime.now(pakistan_tz)
+
+
+st.caption(f"System Last Updated: {local_time.strftime('%Y-%m-%d %H:%M:%S')} PKT")
