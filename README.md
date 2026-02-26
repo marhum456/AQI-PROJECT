@@ -19,6 +19,18 @@ Key features:
 
 ---
 
+## Technology Stack
+- **Programming Language:** Python 3.10+  
+- **Data Collection & APIs:** OpenMeteo, AQI Pollutants APIs  
+- **Database / Feature Store:** MongoDB  
+- **Machine Learning:** Scikit-learn (Random Forest), XGBoost, LightGBM  
+- **Feature Importance / Explainability:** SHAP  
+- **Visualization / Dashboard:** Streamlit, Plotly  
+- **CI/CD & Automation:** GitHub Actions, Python scripts  
+- **Deployment:** Cloud-ready Streamlit app  
+- **Version Control:** Git / GitHub
+
+---
 ## Data Collection
 - **APIs Used:** OpenMeteo (selected for free access and no DNS restrictions)  
 - **Historical Data:** 90+ days  
