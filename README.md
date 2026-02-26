@@ -1,4 +1,4 @@
-### Automated AQI Prediction System Gujrat, Pakistan – 72-Hour Forecast
+### **Automated AQI Prediction System Gujrat, Pakistan – 72-Hour Forecast**
 
 ---
 
