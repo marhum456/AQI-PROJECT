@@ -219,3 +219,4 @@ Cleaned datasets are saved back to MongoDB for modeling.
 ```bash
 git clone https://github.com/yourusername/aqi-prediction-system.git
 cd aqi-prediction-system
+2. **Create virtual environment & install dependencies:**
