@@ -218,5 +218,12 @@ Cleaned datasets are saved back to MongoDB for modeling.
 1. **Clone the repository:**  
 ```bash
 git clone https://github.com/yourusername/aqi-prediction-system.git
-cd aqi-prediction-system
-2. **Create virtual environment & install dependencies:**
+cd aqi-prediction-system```
+
+### 13.2 Set Environment Variables
+Create a `.env` file in the project root and add:
+
+```env
+MONGO_URI=<your_mongodb_uri>
+CITY_LATITUDE=32.5731
+CITY_LONGITUDE=74.1005
