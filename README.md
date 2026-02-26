@@ -109,4 +109,5 @@ https://aqi-project-gujrat.streamlit.app/
 
 ---
 
-**Contact:** muhammadarhum277@gmail.com  
+## Contact:
+muhammadarhum277@gmail.com  
