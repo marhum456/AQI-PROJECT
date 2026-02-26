@@ -220,8 +220,9 @@ Cleaned datasets are saved back to MongoDB for modeling.
 git clone https://github.com/yourusername/aqi-prediction-system.git
 cd aqi-prediction-system```
 
-### 13.2 Set Environment Variables
-Create a `.env` file in the project root and add:
+**Set Environment Variables**
+
+Create a `.env` file and add:
 
 ```env
 MONGO_URI=<your_mongodb_uri>
