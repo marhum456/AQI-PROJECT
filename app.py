@@ -193,7 +193,38 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 st.markdown('</div>', unsafe_allow_html=True)
+    # =========================
+    # DAILY AQI SUMMARY (PER DAY)
+    # =========================
 
+st.markdown("### 📅 3-Day AQI Daily Breakdown")
+
+    # Create date column
+predictions_df['date'] = predictions_df['timestamp'].dt.date
+
+    # Group by each day
+daily_stats = (
+        predictions_df
+        .groupby('date')['predicted_aqi']
+        .agg(['max', 'min', 'mean'])
+        .reset_index()
+    )
+
+    # Round average
+daily_stats['mean'] = daily_stats['mean'].round(2)
+
+    # Display each day in separate glass-style rows
+for i, row in daily_stats.iterrows():
+
+        st.markdown(f"#### Day {i+1} — {row['date']}")
+
+        col1, col2, col3 = st.columns(3)
+
+        col1.metric("Maximum AQI", int(row['max']))
+        col2.metric("Minimum AQI", int(row['min']))
+        col3.metric("Average AQI", row['mean'])
+
+        st.markdown("---")
 # =========================
 # FORECAST SECTION
 # =========================
