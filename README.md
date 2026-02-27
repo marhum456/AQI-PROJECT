@@ -139,9 +139,9 @@ Cleaned datasets are saved back to MongoDB for modeling.
 
 | Model         | R² Score | MAE   | RMSE  |
 |---------------|----------|-------|-------|
-| Random Forest | 0.775    | 11.65 | 23.32 |
-| XGBoost       | 0.698    | 17.20 | 27.03 |
-| LightGBM      | 0.718    | 16.86 | 26.11 |
+| Random Forest | 0.729    | 14.91 | 28.99 |
+| XGBoost       | 0.686    | 19.79 | 31.2 |
+| LightGBM      | 0.692   | 19.52 | 30.91 |
 
 **Best Model:** Random Forest (highest R², lowest MAE & RMSE)  
 
