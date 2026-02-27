@@ -22,7 +22,7 @@
 Air pollution is a critical environmental issue in Pakistan. This project builds an automated machine learning system to predict AQI in Gujrat for up to 72 hours, helping individuals plan activities safely and enabling policymakers to act promptly.  
 
 **Objectives:**  
-- Predict AQI with R² ≥ 0.75.  
+- Predict AQI with R² ≥ 0.70.  
 - Automate hourly data collection.  
 - Establish daily model training and forecasting pipelines.  
 - Deploy an interactive, cloud-ready dashboard.  
