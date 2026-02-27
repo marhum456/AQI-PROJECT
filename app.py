@@ -26,40 +26,52 @@ st.set_page_config(
     layout="wide"
 )
 
-# =========================
-# WHO Dark Theme + Glass UI
-# =========================
-
 st.markdown("""
 <style>
 
 /* Background */
 .stApp {
     background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
-    color: #E2E8F0;
+    color: #F8FAFC;  /* Brighter default text */
 }
 
 /* Glass Card */
 .glass-card {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.07);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 20px;
     padding: 35px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.35);
     margin-bottom: 30px;
 }
 
 /* Headings */
-h1, h2, h3 {
-    color: #F1F5F9;
+h1, h2, h3, h4 {
+    color: #FFFFFF;
 }
 
-/* Subtext */
+/* Subtitle - FIXED (Brighter Color) */
 .subtitle {
-    color: #94A3B8;
-    font-size: 15px;
+    color: #E2E8F0;   /* Much brighter */
+    font-size: 16px;
+    font-weight: 400;
+}
+
+/* Markdown text */
+p, span, label {
+    color: #F1F5F9 !important;
+}
+
+/* Metric labels */
+[data-testid="stMetricLabel"] {
+    color: #E2E8F0 !important;
+}
+
+/* Metric values */
+[data-testid="stMetricValue"] {
+    color: #FFFFFF !important;
 }
 
 </style>
