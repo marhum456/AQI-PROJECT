@@ -23,7 +23,7 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 import xgboost as xgb
 import lightgbm as lgb
-from sklearn.model_selection import train_test_split, RandomizedSearchCV
+
 
 def load_features_from_mongodb():
     """Load engineered AQI features from MongoDB collection 'engineered_data_final'."""
@@ -77,6 +77,38 @@ def load_features_from_mongodb():
 
     return df
 
+
+
+# ===============================
+# Data Cleaning + Missing Filling
+# ===============================
+
+def clean_and_fill_data(df):
+
+    df["timestamp"] = pd.to_datetime(df["timestamp"])
+    df = df.sort_values("timestamp")
+
+    df = df.set_index("timestamp")
+
+    full_range = pd.date_range(
+        start=df.index.min(),
+        end=df.index.max(),
+        freq="h"
+    )
+
+    df = df.reindex(full_range)
+    df.index.name = "timestamp"
+
+    print("Missing rows added:", df.isna().any(axis=1).sum())
+
+    df = df.interpolate(method="time")
+    df = df.bfill().ffill()
+
+    df = df.reset_index()
+
+    print("After filling:", df.shape)
+
+    return df
 
 def prepare_data(df):
     """Prepare features and target using final engineered features."""
@@ -144,63 +176,57 @@ def prepare_data(df):
     print(f"Train: {len(X_train)}, Test: {len(X_test)}\n")
 
     return X_train, X_test, y_train, y_test, features
-    
+
+# ===============================
+# Train Models (Fixed Parameters)
+# ===============================
+
 def train_models(X_train, y_train):
-    """Train all 3 models with hyperparameter tuning."""
-    print("Training models with hyperparameter tuning...\n")
 
-    # ------------------- Random Forest -------------------
-    print("[1/3] Random Forest...")
-    rf = RandomForestRegressor(random_state=42, n_jobs=-1)
-    rf_param_grid = {
-        "n_estimators": [100, 200, 300],
-        "max_depth": [5, 8, 12, None],
-        "min_samples_split": [2, 5, 10],
-        "min_samples_leaf": [1, 4, 8]
-    }
-    rf_search = RandomizedSearchCV(
-        rf, rf_param_grid, n_iter=5, cv=3, scoring="r2", n_jobs=-1, random_state=42
+    print("Training models...\n")
+
+    rf = RandomForestRegressor(
+        n_estimators=300,
+        min_samples_split=5,
+        min_samples_leaf=4,
+        max_depth=None,
+        random_state=42,
+        n_jobs=-1
     )
-    rf_search.fit(X_train, y_train)
 
-    # ------------------- XGBoost -------------------
-    print("[2/3] XGBoost...")
-    xgb_model = xgb.XGBRegressor(random_state=42, n_jobs=-1)
-    xgb_param_grid = {
-        "n_estimators": [100, 150, 200],
-        "max_depth": [3, 5, 7],
-        "learning_rate": [0.01, 0.05, 0.1],
-        "subsample": [0.7, 0.8, 1.0],
-        "colsample_bytree": [0.6, 0.8, 1.0]
-    }
-    xgb_search = RandomizedSearchCV(
-        xgb_model, xgb_param_grid, n_iter=5, cv=3, scoring="r2", n_jobs=-1, random_state=42
+    rf.fit(X_train, y_train)
+
+    xgb_model = xgb.XGBRegressor(
+        n_estimators=200,
+        max_depth=5,
+        learning_rate=0.1,
+        subsample=0.8,
+        colsample_bytree=1.0,
+        random_state=42,
+        n_jobs=-1
     )
-    xgb_search.fit(X_train, y_train)
 
-    # ------------------- LightGBM -------------------
-    print("[3/3] LightGBM...")
-    lgb_model = lgb.LGBMRegressor(random_state=42, n_jobs=-1)
-    lgb_param_grid = {
-        "n_estimators": [100, 200, 300],
-        "max_depth": [3, 5, 7, -1],
-        "learning_rate": [0.01, 0.05, 0.1],
-        "num_leaves": [7, 15, 31],
-        "subsample": [0.7, 0.8, 1.0],
-        "colsample_bytree": [0.6, 0.8, 1.0]
-    }
-    lgb_search = RandomizedSearchCV(
-        lgb_model, lgb_param_grid, n_iter=5, cv=3, scoring="r2", n_jobs=-1, random_state=42
+    xgb_model.fit(X_train, y_train)
+
+    lgb_model = lgb.LGBMRegressor(
+        n_estimators=300,
+        max_depth=3,
+        learning_rate=0.1,
+        num_leaves=31,
+        subsample=0.8,
+        colsample_bytree=1.0,
+        random_state=42,
+        n_jobs=-1
     )
-    lgb_search.fit(X_train, y_train)
 
-    print("\nTraining complete!\n")
+    lgb_model.fit(X_train, y_train)
 
     return {
-        "random_forest": rf_search.best_estimator_,
-        "xgboost": xgb_search.best_estimator_,
-        "lightgbm": lgb_search.best_estimator_
+        "random_forest": rf,
+        "xgboost": xgb_model,
+        "lightgbm": lgb_model
     }
+
 
 
 def evaluate_models(models, X_test, y_test):
@@ -316,6 +342,8 @@ def main():
     # Load features from MongoDB
     df = load_features_from_mongodb()
     
+    df = clean_and_fill_data(df)
+
     # Prepare data
     X_train, X_test, y_train, y_test, features = prepare_data(df)
     
