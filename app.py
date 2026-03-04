@@ -97,11 +97,14 @@ def get_aqi_color(aqi):
 
 
 def load_model_registry():
+    """Load the latest trained model registry based on `is_latest`."""
     try:
         client = MongoClient(MONGO_URI)
         db = client["aqi_project"]
-        return db["final_model_registry"].find_one()
-    except:
+        registry = db["final_model_registry"].find_one({"is_latest": True})
+        return registry
+    except Exception as e:
+        print(f"Error loading model registry: {e}")
         return None
     finally:
         client.close()
