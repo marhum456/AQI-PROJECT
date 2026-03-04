@@ -144,41 +144,62 @@ def prepare_data(df):
     print(f"Train: {len(X_train)}, Test: {len(X_test)}\n")
 
     return X_train, X_test, y_train, y_test, features
-
+    
 def train_models(X_train, y_train):
-    """Train all 3 models."""
-    
-    print("Training models...\n")
-    
-    # Random Forest
+    """Train all 3 models with hyperparameter tuning."""
+    print("Training models with hyperparameter tuning...\n")
+
+    # ------------------- Random Forest -------------------
     print("[1/3] Random Forest...")
-    rf = RandomForestRegressor(
-        n_estimators=150, max_depth=8, min_samples_split=15,
-        min_samples_leaf=8, max_features="sqrt", random_state=42, n_jobs=-1
+    rf = RandomForestRegressor(random_state=42, n_jobs=-1)
+    rf_param_grid = {
+        "n_estimators": [100, 200, 300],
+        "max_depth": [5, 8, 12, None],
+        "min_samples_split": [2, 5, 10],
+        "min_samples_leaf": [1, 4, 8]
+    }
+    rf_search = RandomizedSearchCV(
+        rf, rf_param_grid, n_iter=5, cv=3, scoring="r2", n_jobs=-1, random_state=42
     )
-    rf.fit(X_train, y_train)
-    
-    # XGBoost
+    rf_search.fit(X_train, y_train)
+
+    # ------------------- XGBoost -------------------
     print("[2/3] XGBoost...")
-    xgb_model = xgb.XGBRegressor(
-        n_estimators=120, max_depth=3, learning_rate=0.02,
-        subsample=0.7, colsample_bytree=0.6,reg_alpha=3.0,reg_lambda=5.0,gamma=1.0, random_state=42, n_jobs=-1
+    xgb_model = xgb.XGBRegressor(random_state=42, n_jobs=-1)
+    xgb_param_grid = {
+        "n_estimators": [100, 150, 200],
+        "max_depth": [3, 5, 7],
+        "learning_rate": [0.01, 0.05, 0.1],
+        "subsample": [0.7, 0.8, 1.0],
+        "colsample_bytree": [0.6, 0.8, 1.0]
+    }
+    xgb_search = RandomizedSearchCV(
+        xgb_model, xgb_param_grid, n_iter=5, cv=3, scoring="r2", n_jobs=-1, random_state=42
     )
-    xgb_model.fit(X_train, y_train)
-    
-    # LightGBM
+    xgb_search.fit(X_train, y_train)
+
+    # ------------------- LightGBM -------------------
     print("[3/3] LightGBM...")
-    lgb_model = lgb.LGBMRegressor(
-        n_estimators=120, max_depth=3, learning_rate=0.02,min_child_samples=30,
-        num_leaves=7, subsample=0.7,colsample_bytree=0.6,reg_alpha=3.0,reg_lambda=5.0, random_state=42, n_jobs=-1, verbose=-1
+    lgb_model = lgb.LGBMRegressor(random_state=42, n_jobs=-1)
+    lgb_param_grid = {
+        "n_estimators": [100, 200, 300],
+        "max_depth": [3, 5, 7, -1],
+        "learning_rate": [0.01, 0.05, 0.1],
+        "num_leaves": [7, 15, 31],
+        "subsample": [0.7, 0.8, 1.0],
+        "colsample_bytree": [0.6, 0.8, 1.0]
+    }
+    lgb_search = RandomizedSearchCV(
+        lgb_model, lgb_param_grid, n_iter=5, cv=3, scoring="r2", n_jobs=-1, random_state=42
     )
-    lgb_model.fit(X_train, y_train)
-    
-    print()
+    lgb_search.fit(X_train, y_train)
+
+    print("\nTraining complete!\n")
+
     return {
-        "random_forest": rf,
-        "xgboost": xgb_model,
-        "lightgbm": lgb_model
+        "random_forest": rf_search.best_estimator_,
+        "xgboost": xgb_search.best_estimator_,
+        "lightgbm": lgb_search.best_estimator_
     }
 
 
