@@ -17,68 +17,64 @@ from dotenv import load_dotenv
 
 
 
+import os
+import sys
+import pickle
+from pymongo import MongoClient
+from bson import ObjectId
+from gridfs import GridFS
+from dotenv import load_dotenv
+
+
 def load_best_model_from_registry():
     """
-    Load the latest best model info from MongoDB 'final_model_registry' collection
-    and return the loaded model object along with its name.
-    Returns:
-        model (object): Loaded ML model
-        best_model_name (str): Name of the best model
+    Load latest best model from MongoDB GridFS using registry metadata
     """
-    print("Loading best model from registry...")
 
-    # Load environment variables
+    print("Loading best model from MongoDB registry...")
+
     load_dotenv()
     MONGO_URI = os.getenv("MONGO_URI")
+
     if not MONGO_URI:
-        print("ERROR: MONGO_URI not found in .env file")
+        print("ERROR: MONGO_URI not found")
         sys.exit(1)
 
     try:
-        # Connect to MongoDB
         client = MongoClient(MONGO_URI)
         db = client["aqi_project"]
+
         collection = db["final_model_registry"]
+        fs = GridFS(db)
 
-        # Get the latest model marked as is_latest
+        # get latest model
         registry = collection.find_one({"is_latest": True})
+
+        if not registry:
+            print("No latest model found")
+            return None, None
+
+        best_model_name = registry["best_model"]
+        model_gridfs_id = registry["model_gridfs_id"]
+
+        model_r2 = registry.get("models", {}).get(best_model_name, {}).get("r2", "N/A")
+
+        print(f"Best model: {best_model_name} (R² = {model_r2})")
+
+        # Load model from GridFS
+        model_bytes = fs.get(ObjectId(model_gridfs_id)).read()
+        model = pickle.loads(model_bytes)
+
+        client.close()
+
+        print("Model loaded successfully\n")
+
+        return model, best_model_name
+
     except Exception as e:
-        print(f"ERROR connecting to MongoDB or fetching registry: {e}")
+        print(f"Error loading model: {e}")
         return None, None
-    finally:
-        try:
-            client.close()
-        except:
-            pass
-
-    if not registry:
-        print("Error: No latest model registry found!")
-        return None, None
-
-    best_model_name = registry.get('best_model')
-    best_model_path = registry.get('best_model_path')
-
-    if not best_model_name or not best_model_path:
-        print("Error: Registry missing 'best_model' or 'best_model_path'")
-        return None, None
-
-    model_r2 = registry.get('models', {}).get(best_model_name, {}).get('r2', 'N/A')
-    print(f"Best model: {best_model_name} (R² = {model_r2})\n")
-
-    # Load model from disk
-    model_file = Path(__file__).resolve().parents[2] / best_model_path
-    if not model_file.exists():
-        print(f"Error: Model file not found at {model_file}")
-        return None, None
-
-    try:
-        model = joblib.load(model_file)
-    except Exception as e:
-        print(f"Error loading model from disk: {e}")
-        return None, None
-
-    return model, best_model_name
-
+    
 
 def get_latest_data_from_mongodb(limit=24):
     """

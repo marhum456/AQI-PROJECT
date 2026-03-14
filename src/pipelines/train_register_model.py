@@ -9,7 +9,7 @@ import pandas as pd
 import numpy as np
 import joblib
 from datetime import datetime
-
+import pickle
 
 
 
@@ -23,7 +23,7 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 import xgboost as xgb
 import lightgbm as lgb
-
+from gridfs import GridFS
 
 def load_features_from_mongodb():
     """Load engineered AQI features from MongoDB collection 'engineered_data_final'."""
@@ -262,23 +262,11 @@ def select_best_model(results):
     return best_model[0]
 
 
-def save_best_model(models, best_model_name):
-    """Save only the best model to disk."""
-    models_dir = Path(__file__).resolve().parents[2] / "models"
-    models_dir.mkdir(exist_ok=True)
-    
-    filename = f"best_model_{best_model_name}.pkl"
-    joblib.dump(models[best_model_name], models_dir / filename)
-    
-    print(f"Best model saved: {filename}\n")
+def save_best_model_to_mongodb(models, best_model_name):
+    """Save the best model directly to MongoDB GridFS."""
 
+    print("Saving best model to MongoDB...")
 
-def register_model_to_mongodb(results, best_model_name):
-    """Save model metadata to MongoDB and maintain training history."""
-    
-    print("Registering model to MongoDB...")
-
-    # Load environment variables
     load_dotenv()
     MONGO_URI = os.getenv("MONGO_URI")
 
@@ -287,22 +275,55 @@ def register_model_to_mongodb(results, best_model_name):
         sys.exit(1)
 
     try:
-        # Connect to MongoDB
         client = MongoClient(MONGO_URI)
-
-        # Use default database from URI
         db = client["aqi_project"]
+        fs = GridFS(db)
 
-        # Use your collection
+        # Serialize model
+        model_bytes = pickle.dumps(models[best_model_name])
+
+        # Save to GridFS
+        file_id = fs.put(
+            model_bytes,
+            filename=f"best_model_{best_model_name}.pkl",
+            model_name=best_model_name,
+            saved_at=datetime.utcnow()
+        )
+
+        print(f"Model saved to MongoDB with file_id: {file_id}\n")
+        client.close()
+
+        return file_id
+
+    except Exception as e:
+        print(f"ERROR saving model to MongoDB: {e}")
+        sys.exit(1)
+
+
+def register_model_to_mongodb(results, best_model_name, file_id):
+    """Save model metadata to MongoDB and maintain training history."""
+
+    print("Registering model to MongoDB...")
+
+    load_dotenv()
+    MONGO_URI = os.getenv("MONGO_URI")
+
+    if not MONGO_URI:
+        print("ERROR: MONGO_URI not found in .env file")
+        sys.exit(1)
+
+    try:
+        client = MongoClient(MONGO_URI)
+        db = client["aqi_project"]
         collection = db["final_model_registry"]
 
         # Create model registry document
         registry = {
             "version": "v1.0",
-            "trained_date": datetime.now().isoformat(),
+            "trained_date": datetime.utcnow().isoformat(),
             "models": results,
             "best_model": best_model_name,
-            "best_model_path": f"models/best_model_{best_model_name}.pkl",
+            "model_gridfs_id": str(file_id),
             "is_latest": True,
             "is_baseline": False
         }
@@ -357,11 +378,10 @@ def main():
     best_model = select_best_model(results)
     print(f"Best Model: {best_model.replace('_', ' ').title()} (R² = {results[best_model]['r2']})\n")
     
-    # Save only the best model to disk
-    save_best_model(models, best_model)
+    file_id = save_best_model_to_mongodb(models, best_model)
     
-    # Register to MongoDB
-    register_model_to_mongodb(results, best_model)
+    register_model_to_mongodb(results, best_model, file_id)
+
     
     print("Training complete!")
 
