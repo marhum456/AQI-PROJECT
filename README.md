@@ -123,7 +123,6 @@ Cleaned datasets are saved back to MongoDB for modeling.
 ---
 
 ## Model Training
-# AQI Prediction Models
 
 ## 1️⃣ Baseline Candidate Models
 
