@@ -123,30 +123,41 @@ Cleaned datasets are saved back to MongoDB for modeling.
 ---
 
 ## Model Training
-**Process:**  
-- Source: `engineered_data_final` in MongoDB  
-- Models: Random Forest, XGBoost, LightGBM  
-- Split: 80% training, 20% testing  
-- Input: Pollutants, weather, time, lag, rolling, momentum, interaction features  
-- Output: AQI  
+# AQI Prediction Models
 
-**Hyperparameters:**  
-- Random Forest: 150 trees, max depth 8, min samples per leaf 8  
-- XGBoost: depth 3, learning rate 0.02, L1/L2 regularization  
-- LightGBM: 120 iterations, num_leaves=7, learning rate 0.02, subsample 0.7  
+## 1️⃣ Baseline Candidate Models
 
-**Model Comparison Results:**
+| Model Name   | MAE   | RMSE  | R²     |
+|--------------|-------|-------|--------|
+| RandomForest | 16.81 | 26.18 | 0.7169 |
+| XGBoost      | 20.15 | 30.55 | 0.6523 |
+| LightGBM     | 16.18 | 25.75 | 0.7169 |
 
-| Model         | R² Score | MAE   | RMSE  |
-|---------------|----------|-------|-------|
-| Random Forest | 0.729    | 14.91 | 28.99 |
-| XGBoost       | 0.686    | 19.79 | 31.2 |
-| LightGBM      | 0.692   | 19.52 | 30.91 |
+## 2️⃣ Hyperparameter Tuning (Randomized CV Search)
 
-**Best Model:** Random Forest (highest R², lowest MAE & RMSE)  
+| Model Name   | Hyperparameter Grid (Sampled) | Best CV Score (R²) |
+|--------------|-------------------------------|------------------|
+| RandomForest | n_estimators: [100,200,300], max_depth: [5,8,12,None], min_samples_split: [2,5,10], min_samples_leaf: [1,4,8] | 0.8198 |
+| XGBoost      | n_estimators: [100,150,200], max_depth: [3,5,7], learning_rate: [0.01,0.05,0.1], subsample: [0.7,0.8,1.0], colsample_bytree: [0.6,0.8,1.0] | 0.6191 |
+| LightGBM     | n_estimators: [100,200,300], max_depth: [3,5,7,-1], learning_rate: [0.01,0.05,0.1], num_leaves: [7,15,31], subsample: [0.7,0.8,1.0], colsample_bytree: [0.6,0.8,1.0] | 0.7939 |
 
----
+## 3️⃣ Finalized Models with Selected Hyperparameters
 
+After performing randomized cross-validation search, the best hyperparameters were selected and used to train the final models. These finalized models achieved the following performance on the test set:
+
+- **RandomForest:**  
+  `n_estimators=300`, `max_depth=None`, `min_samples_split=5`, `min_samples_leaf=4`, `random_state=42`, `n_jobs=-1`.  
+  Performance: **MAE=12.56**, **RMSE=25.15**, **R²=0.8198**
+
+- **XGBoost:**  
+  `n_estimators=200`, `max_depth=5`, `learning_rate=0.1`, `subsample=0.8`, `colsample_bytree=1.0`, `random_state=42`, `n_jobs=-1`.  
+  Performance: **MAE=21.62**, **RMSE=36.58**, **R²=0.6191**
+
+- **LightGBM:**  
+  `n_estimators=300`, `max_depth=3`, `learning_rate=0.1`, `num_leaves=31`, `subsample=0.8`, `colsample_bytree=1.0`, `random_state=42`, `n_jobs=-1`.  
+  Performance: **MAE=15.64**, **RMSE=26.90**, **R²=0.7939**
+
+  
 ## Feature Importance
 **Top 10 features using SHAP:**
 
