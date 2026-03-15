@@ -4,7 +4,7 @@ name: Daily Model Training
 on:
   schedule:
     # Run daily at (12:00 AM Pakistan time)
-    - cron: '0 19 * * *'
+    - cron: '0 18 * * *'
   workflow_dispatch:  # Allow manual trigger
 
 jobs:
