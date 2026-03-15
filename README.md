@@ -128,13 +128,13 @@ Cleaned datasets are saved back to MongoDB for modeling.
 
 | Model Name   | MAE   | RMSE  | R²     |
 |--------------|-------|-------|--------|
-| RandomForest | 16.81 | 26.18 | 0.7169 |
+| RandomForest | 11.65 | 23.14 | 0.7789 |
 | XGBoost      | 20.15 | 30.55 | 0.6523 |
 | LightGBM     | 16.18 | 25.75 | 0.7169 |
 
 ## 2️⃣ Hyperparameter Tuning (Randomized CV Search)
 
-| Model Name   | Hyperparameter Grid (Sampled) | Best CV Score (R²) |
+| Model Name   | Hyperparameter Grid (Sampled) | Best R² |
 |--------------|-------------------------------|------------------|
 | RandomForest | n_estimators: [100,200,300], max_depth: [5,8,12,None], min_samples_split: [2,5,10], min_samples_leaf: [1,4,8] | 0.8198 |
 | XGBoost      | n_estimators: [100,150,200], max_depth: [3,5,7], learning_rate: [0.01,0.05,0.1], subsample: [0.7,0.8,1.0], colsample_bytree: [0.6,0.8,1.0] | 0.6191 |
@@ -146,15 +146,15 @@ After performing randomized cross-validation search, the best hyperparameters we
 
 - **RandomForest:**  
   `n_estimators=300`, `max_depth=None`, `min_samples_split=5`, `min_samples_leaf=4`, `random_state=42`, `n_jobs=-1`.  
-  Performance: **MAE=12.56**, **RMSE=25.15**, **R²=0.8198**
+ 
 
 - **XGBoost:**  
   `n_estimators=200`, `max_depth=5`, `learning_rate=0.1`, `subsample=0.8`, `colsample_bytree=1.0`, `random_state=42`, `n_jobs=-1`.  
-  Performance: **MAE=21.62**, **RMSE=36.58**, **R²=0.6191**
+
 
 - **LightGBM:**  
   `n_estimators=300`, `max_depth=3`, `learning_rate=0.1`, `num_leaves=31`, `subsample=0.8`, `colsample_bytree=1.0`, `random_state=42`, `n_jobs=-1`.  
-  Performance: **MAE=15.64**, **RMSE=26.90**, **R²=0.7939**
+ 
 
   
 ## Feature Importance
