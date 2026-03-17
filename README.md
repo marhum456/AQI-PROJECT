@@ -156,27 +156,35 @@ After performing randomized cross-validation search, the best hyperparameters we
   `n_estimators=300`, `max_depth=3`, `learning_rate=0.1`, `num_leaves=31`, `subsample=0.8`, `colsample_bytree=1.0`, `random_state=42`, `n_jobs=-1`.  
  
 
-  
-## Feature Importance
-**Top 10 features using SHAP:**
+# Feature Importance Analysis (SHAP)
 
-| Rank | Feature       | Mean Absolute SHAP |
-|------|---------------|------------------|
-| 1    | aqi_lag_1     | 10.24            |
-| 2    | aqi_roll_mean_6 | 5.63           |
-| 3    | ozone         | 5.11             |
-| 4    | aqi_lag_24    | 4.93             |
-| 5    | pm2_5         | 4.38             |
-| 6    | aqi_change_1h | 4.04             |
-| 7    | pm10          | 4.01             |
-| 8    | sulphur_dioxide | 2.45           |
-| 9    | aqi_roll_mean_24 | 2.28          |
-| 10   | nitrogen_dioxide | 2.00          |
+This section shows the top features driving AQI predictions based on SHAP values from the latest model.
+
+---
+
+## 🔹 Top 10 Features
+
+| Rank | Feature         | Mean Absolute SHAP |
+|------|-----------------|------------------|
+| 1    | aqi_lag_1       | 33.56            |
+| 2    | aqi_change_1h   | 11.20            |
+| 3    | pm2_5           | 8.06             |
+| 4    | ozone           | 7.56             |
+| 5    | pm10            | 0.71             |
+| 6    | aqi_roll_std_6  | 0.28             |
+| 7    | aqi_roll_mean_6 | 0.12             |
+| 8    | carbon_monoxide | 0.11             |
+| 9    | wind_x          | 0.10             |
+| 10   | aqi_roll_std_24 | 0.09             |
 
 **Key Insights:**  
-- Recent AQI dominates predictions.  
-- Primary pollutants (ozone, pm2.5, pm10, SO2, NO2) are critical.  
-- Momentum and rolling features improve short-term predictions.  
+- Recent AQI (`aqi_lag_1`) dominates model predictions.  
+- Short-term changes (`aqi_change_1h`) are highly impactful.  
+- Among pollutants, **pm2.5** and **ozone** are significant.  
+- Rolling statistics help capture short-term trends.  
+- Other features like `carbon_monoxide` and `wind_x` have minimal influence.
+
+---
 
 ---
 
