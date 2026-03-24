@@ -205,12 +205,13 @@ fig.add_annotation(
     align="center"
 )
 
-
 fig.update_layout(
     height=420,
     paper_bgcolor="rgba(0,0,0,0)",
-    font={'color': "#F1F5F9"}
+    font={'color': "#F1F5F9"},
+    margin=dict(t=80, b=0)  # extra top space for text
 )
+
 
 st.plotly_chart(fig, use_container_width=True)
 
