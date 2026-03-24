@@ -193,11 +193,11 @@ fig = go.Figure(go.Indicator(
     }
 ))
 
-# 🔥 ADD OVERLAY TEXT HERE
+# 🔥 FIXED OVERLAY TEXT (proper position)
 fig.add_annotation(
     text="<b>72-Hour AQI Prediction System</b><br><span style='font-size:16px;'>Predicting Air Pollution Before It Happens</span>",
     x=0.5,
-    y=1.15,
+    y=1.25,   # ⬆️ moved higher
     xref="paper",
     yref="paper",
     showarrow=False,
@@ -206,10 +206,10 @@ fig.add_annotation(
 )
 
 fig.update_layout(
-    height=420,
+    height=450,  # ⬆️ increased height
     paper_bgcolor="rgba(0,0,0,0)",
     font={'color': "#F1F5F9"},
-    margin=dict(t=120, b=0)  # extra top space for text
+    margin=dict(t=120, b=0)  # ⬆️ more top margin
 )
 
 
