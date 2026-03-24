@@ -209,7 +209,7 @@ fig.update_layout(
     height=420,
     paper_bgcolor="rgba(0,0,0,0)",
     font={'color': "#F1F5F9"},
-    margin=dict(t=80, b=0)  # extra top space for text
+    margin=dict(t=120, b=0)  # extra top space for text
 )
 
 
