@@ -195,7 +195,7 @@ fig = go.Figure(go.Indicator(
 
 # 🔥 FIXED OVERLAY TEXT (proper position)
 fig.add_annotation(
-    text="<b>72-Hour AQI Prediction System</b><br><span style='font-size:16px;'>Predicting Air Pollution Before It Happens</span>",
+    text="<b>ML-Based AQI Forecasting</b><br><span style='font-size:16px;'>Predicting Air Pollution Before It Happens</span>",
     x=0.5,
     y=1.25,   # ⬆️ moved higher
     xref="paper",
