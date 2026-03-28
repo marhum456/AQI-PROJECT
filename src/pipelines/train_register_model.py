@@ -101,8 +101,7 @@ def clean_and_fill_data(df):
 
     print("Missing rows added:", df.isna().any(axis=1).sum())
 
-    df = df.interpolate(method="time")
-    df = df.bfill().ffill()
+    df = df.ffill()   # only past
 
     df = df.reset_index()
 
@@ -111,9 +110,21 @@ def clean_and_fill_data(df):
     return df
 
 def prepare_data(df):
-    """Prepare features and target using final engineered features."""
-    
-    # Final Feature Groups (same as select_final_features)
+    """Prepare features and target using final engineered features (NO LEAKAGE)."""
+
+    # Sort first
+    df = df.sort_values("timestamp").reset_index(drop=True)
+
+    # Split FIRST (before any fill)
+    split_index = int(len(df) * 0.8)
+    train_df = df.iloc[:split_index].copy()
+    test_df  = df.iloc[split_index:].copy()
+
+    # Fill separately (no cross-boundary leakage)
+    train_df = train_df.ffill()
+    test_df  = test_df.ffill()
+
+    # Final Feature Groups
     base_pollutants = [
         "pm10", "pm2_5", "carbon_monoxide",
         "nitrogen_dioxide", "sulphur_dioxide", "ozone"
@@ -147,7 +158,6 @@ def prepare_data(df):
         "wind_x", "wind_y"
     ]
 
-    # Combine all feature columns
     features = (
         base_pollutants +
         weather_features +
@@ -158,19 +168,14 @@ def prepare_data(df):
         interaction_features
     )
 
-    # Keep only available columns (safe guard)
     features = [col for col in features if col in df.columns]
 
-    X = df[features]
-    y = df["aqi"]
+    # Split features/target AFTER safe processing
+    X_train = train_df[features]
+    y_train = train_df["aqi"]
 
-    # Time-series split (no shuffle!)
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y,
-        test_size=0.2,
-        random_state=42,
-        shuffle=False
-    )
+    X_test = test_df[features]
+    y_test = test_df["aqi"]
 
     print(f"Total Features Used: {len(features)}")
     print(f"Train: {len(X_train)}, Test: {len(X_test)}\n")
@@ -363,8 +368,9 @@ def main():
     # Load features from MongoDB
     df = load_features_from_mongodb()
     
-    df = clean_and_fill_data(df)
-
+    #df = clean_and_fill_data(df)
+    df["timestamp"] = pd.to_datetime(df["timestamp"])
+    df = df.sort_values("timestamp")
     # Prepare data
     X_train, X_test, y_train, y_test, features = prepare_data(df)
     
