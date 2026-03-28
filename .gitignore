@@ -33,9 +33,7 @@ C:\Users\PMLS\.conda\envs\aqi-env
 .vscode/
 
 # ===== Data & Models =====
-data/
 datasets/
-models/
 artifacts/
 mlruns/
 
