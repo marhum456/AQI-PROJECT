@@ -145,7 +145,9 @@ def engineer_features(df, mongo):
 
     df['aqi'] = df.apply(calculate_aqi, axis=1)
 
-    # Time features
+# =========================
+    # Time Features
+    # =========================
     hour = df['timestamp'].dt.hour
     df['hour_sin'] = np.sin(2 * np.pi * hour / 24)
     df['hour_cos'] = np.cos(2 * np.pi * hour / 24)
@@ -158,28 +160,59 @@ def engineer_features(df, mongo):
     df['month_sin'] = np.sin(2 * np.pi * month / 12)
     df['month_cos'] = np.cos(2 * np.pi * month / 12)
 
-    # Lag features
+    # =========================
+    # Lag Features (SAFE)
+    # =========================
     collection = mongo.get_collection("engineered_data_final")
     recent = list(collection.find().sort("timestamp", -1).limit(24))
-    recent_df = pd.DataFrame(recent).sort_values("timestamp") if recent else pd.DataFrame()
-    df['aqi_lag_1'] = recent_df['aqi'].iloc[-1] if len(recent_df) >= 1 else df['aqi']
-    df['aqi_lag_3'] = recent_df['aqi'].iloc[-3] if len(recent_df) >= 3 else df['aqi']
-    df['aqi_lag_6'] = recent_df['aqi'].iloc[-6] if len(recent_df) >= 6 else df['aqi']
-    df['aqi_lag_24'] = recent_df['aqi'].iloc[0] if len(recent_df) >= 24 else df['aqi']
 
-    # Rolling statistics
-    aqi_series = recent_df['aqi'] if len(recent_df) > 0 else df['aqi']
-    df['aqi_roll_mean_6'] = aqi_series.tail(6).mean()
-    df['aqi_roll_std_6'] = aqi_series.tail(6).std()
-    df['aqi_roll_mean_24'] = aqi_series.tail(24).mean()
-    df['aqi_roll_std_24'] = aqi_series.tail(24).std()
+    if len(recent) > 0:
+        recent_df = pd.DataFrame(recent).sort_values("timestamp")
+        aqi_series = recent_df['aqi'].reset_index(drop=True)
+    else:
+        recent_df = pd.DataFrame()
+        aqi_series = pd.Series(dtype=float)
 
-    # Momentum
-    df['aqi_change_1h'] = df['aqi'] - df['aqi_lag_1']
+    def get_lag(series, lag):
+        if len(series) >= lag:
+            return series.iloc[-lag]
+        return np.nan  # ❌ NO fallback to current AQI
 
-    # Interaction features
+    df['aqi_lag_1'] = get_lag(aqi_series, 1)
+    df['aqi_lag_3'] = get_lag(aqi_series, 3)
+    df['aqi_lag_6'] = get_lag(aqi_series, 6)
+    df['aqi_lag_24'] = get_lag(aqi_series, 24)
+
+    # =========================
+    # Rolling Features (SAFE)
+    # =========================
+    def safe_rolling(series, window, func):
+        if len(series) >= window:
+            return getattr(series.tail(window), func)()
+        return np.nan  # ❌ NO fallback
+
+    df['aqi_roll_mean_6'] = safe_rolling(aqi_series, 6, "mean")
+    df['aqi_roll_std_6'] = safe_rolling(aqi_series, 6, "std")
+    df['aqi_roll_mean_24'] = safe_rolling(aqi_series, 24, "mean")
+    df['aqi_roll_std_24'] = safe_rolling(aqi_series, 24, "std")
+
+    # =========================
+    # Momentum (FIXED)
+    # =========================
+    # ❌ OLD (leakage): current - lag
+    # df['aqi_change_1h'] = df['aqi'] - df['aqi_lag_1']
+
+    # ✅ NEW (safe): past change only
+    if len(aqi_series) >= 3:
+        df['aqi_change_1h'] = aqi_series.iloc[-1] - aqi_series.iloc[-3]
+    else:
+        df['aqi_change_1h'] = np.nan
+
+    # =========================
+    # Interaction Features
+    # =========================
     df['temp_humidity'] = df['temperature_2m'] * df['relative_humidity_2m']
-    # Wind decomposition (important for pollution dispersion)
+
     if 'wind_direction_10m' in df.columns:
         df['wind_x'] = df['wind_speed_10m'] * np.cos(np.radians(df['wind_direction_10m']))
         df['wind_y'] = df['wind_speed_10m'] * np.sin(np.radians(df['wind_direction_10m']))
@@ -189,6 +222,7 @@ def engineer_features(df, mongo):
 
     print(f"Engineered features for timestamp: {df['timestamp'].iloc[0]}")
     print(f"Calculated AQI: {df['aqi'].iloc[0]:.0f}\n")
+
     return df
 
 
