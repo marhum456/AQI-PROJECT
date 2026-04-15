@@ -3,7 +3,7 @@ name: Daily Predictions
 on:
   schedule:
     # Run daily at (12:00 AM Pakistan time)
-    - cron: '0 19 * * *'
+    #- cron: '0 19 * * *'
   workflow_dispatch:  # Allow manual trigger
 
 jobs:
